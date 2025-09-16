@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // One-to-Many: A User can create many Polls
+  polls Poll[] @relation("PollCreator")
+  
+  // Many-to-Many: A User can vote on many PollOptions
+  votes Vote[]
+
+  @@map("users")
+}
+
+model Poll {
+  id          Int      @id @default(autoincrement())
+  question    String
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Foreign key for creator
+  creatorId   Int
+  
+  // One-to-Many: Each Poll has only one creator (User)
+  creator     User @relation("PollCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  
+  // One-to-Many: A Poll can have multiple PollOptions
+  options     PollOption[]
+
+  @@map("polls")
+}
+
+model PollOption {
+  id     Int    @id @default(autoincrement())
+  text   String
+  
+  // Foreign key for poll
+  pollId Int
+  
+  // Many-to-One: Each PollOption belongs to only one Poll
+  poll   Poll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  
+  // Many-to-Many: A PollOption can be voted on by many Users
+  votes  Vote[]
+
+  @@map("poll_options")
+}
+
+model Vote {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  
+  // Foreign key for user
+  userId       Int
+  
+  // Foreign key for poll option
+  pollOptionId Int
+  
+  // Many-to-One: Each Vote belongs to one User
+  user         User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Many-to-One: Each Vote belongs to one PollOption
+  pollOption   PollOption @relation(fields: [pollOptionId], references: [id], onDelete: Cascade)
+  
+  // Ensure a user can only vote once per poll option
+  @@unique([userId, pollOptionId])
+  @@map("votes")
+}
