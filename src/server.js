@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 require('dotenv').config();
@@ -31,12 +32,20 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files for client example
+app.use('/client', express.static(path.join(__dirname, '../client-example')));
+
 // Basic route
 app.get('/', (req, res) => {
   res.json({
     message: 'Real-Time Polling API Server',
     version: '1.0.0',
-    status: 'running'
+    status: 'running',
+    endpoints: {
+      'API Documentation': '/api',
+      'Health Check': '/health',
+      'Client Example': '/client'
+    }
   });
 });
 
