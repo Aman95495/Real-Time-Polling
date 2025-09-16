@@ -7,6 +7,12 @@ require('dotenv').config();
 // Database connection
 const { connectDatabase } = require('./utils/database');
 
+// Import routes
+const userRoutes = require('./routes/userRoutes');
+const pollRoutes = require('./routes/pollRoutes');
+const voteRoutes = require('./routes/voteRoutes');
+const { getApiDocumentation } = require('./utils/apiDocs');
+
 const app = express();
 const server = createServer(app);
 
@@ -42,6 +48,16 @@ app.get('/health', (req, res) => {
     uptime: process.uptime()
   });
 });
+
+// API Documentation endpoint
+app.get('/api', (req, res) => {
+  res.json(getApiDocumentation());
+});
+
+// API Routes
+app.use('/api/users', userRoutes);
+app.use('/api/polls', pollRoutes);
+app.use('/api/votes', voteRoutes);
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
