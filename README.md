@@ -1,65 +1,90 @@
 # Real-Time Polling Application
 
-A backend service for a real-time polling application built with Node.js, Express, PostgreSQL, Prisma, and WebSockets.
+A comprehensive backend service for a real-time polling application built with Node.js, Express, PostgreSQL, Prisma, and WebSockets. This project demonstrates modern web development practices including RESTful API design, real-time communication, authentication, and database relationships.
 
-## Features
+## 🌟 Features
 
-- RESTful API for CRUD operations
-- Real-time poll results using WebSockets
-- PostgreSQL database with Prisma ORM
-- User authentication and authorization
-- Live vote counting and broadcasting
+- **RESTful API** for complete CRUD operations
+- **Real-time updates** using Socket.IO WebSockets
+- **PostgreSQL database** with Prisma ORM
+- **JWT Authentication** and authorization
+- **Input validation** and error handling
+- **Comprehensive relationships** (one-to-many, many-to-many)
+- **Live vote counting** and broadcasting
+- **Interactive client example** for testing
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 - **Backend**: Node.js with Express.js
 - **Database**: PostgreSQL
 - **ORM**: Prisma
 - **Real-time**: Socket.IO
-- **Authentication**: JWT
+- **Authentication**: JWT + bcrypt
+- **Validation**: express-validator
 
-## Project Structure
+## 📁 Project Structure
 
 ```
+real-time-polling/
 ├── src/
-│   ├── controllers/     # Request handlers
-│   ├── routes/         # API routes
-│   ├── middleware/     # Custom middleware
-│   ├── utils/          # Utility functions
-│   └── server.js       # Main server file
+│   ├── controllers/         # Request handlers
+│   │   ├── userController.js
+│   │   ├── pollController.js
+│   │   └── voteController.js
+│   ├── routes/             # API routes
+│   │   ├── userRoutes.js
+│   │   ├── pollRoutes.js
+│   │   └── voteRoutes.js
+│   ├── middleware/         # Custom middleware
+│   │   ├── auth.js
+│   │   └── validation.js
+│   ├── utils/              # Utility functions
+│   │   ├── database.js
+│   │   ├── jwt.js
+│   │   ├── password.js
+│   │   └── apiDocs.js
+│   └── server.js           # Main server file
 ├── prisma/
-│   └── schema.prisma   # Database schema
-├── .env.example        # Environment variables template
+│   └── schema.prisma       # Database schema
+├── scripts/
+│   ├── setup-database.js   # Database seeding
+│   └── test-api.js         # API testing
+├── client-example/
+│   └── index.html          # Interactive client
+├── .env.example            # Environment template
 ├── package.json
 └── README.md
 ```
 
-## Setup Instructions
+## 🚀 Quick Start
 
-### 1. Clone the repository
+### 1. Clone and Install Dependencies
+
 ```bash
 git clone <repository-url>
 cd real-time-polling
-```
-
-### 2. Install dependencies
-```bash
 npm install
 ```
 
-### 3. Environment Setup
+### 2. Environment Setup
+
 ```bash
 cp .env.example .env
 ```
 
 Edit `.env` file with your database credentials:
-```
+```env
 DATABASE_URL="postgresql://username:password@localhost:5432/polling_db"
-JWT_SECRET="your-secret-key"
+JWT_SECRET="your-secret-key-change-this-in-production"
 PORT=3000
+NODE_ENV=development
+CORS_ORIGIN="http://localhost:3000"
 ```
 
-### 4. Database Setup
+### 3. Database Setup
+
+Ensure PostgreSQL is running, then:
+
 ```bash
 # Generate Prisma client
 npm run db:generate
@@ -67,69 +92,205 @@ npm run db:generate
 # Push schema to database
 npm run db:push
 
-# Or run migrations (for production)
-npm run db:migrate
+# Seed with sample data
+npm run db:setup
 ```
 
-### 5. Run the application
+### 4. Start the Server
+
 ```bash
-# Development mode
+# Development mode (with auto-restart)
 npm run dev
 
 # Production mode
 npm start
 ```
 
-## API Endpoints
+Server will be running at `http://localhost:3000`
 
-### Users
-- `POST /api/users/register` - Register a new user
+## 📖 Usage
+
+### API Endpoints
+
+Visit `http://localhost:3000/api` for complete API documentation.
+
+#### Authentication
+- `POST /api/users/register` - Register new user
 - `POST /api/users/login` - Login user
-- `GET /api/users/profile` - Get user profile
+- `GET /api/users/profile` - Get user profile (protected)
 
-### Polls
-- `POST /api/polls` - Create a new poll
-- `GET /api/polls` - Get all polls
+#### Polls
+- `POST /api/polls` - Create poll (protected)
+- `GET /api/polls` - Get all published polls
 - `GET /api/polls/:id` - Get specific poll
-- `PUT /api/polls/:id/publish` - Publish a poll
+- `PUT /api/polls/:id/publish` - Publish poll (protected)
+- `DELETE /api/polls/:id` - Delete poll (protected)
 
-### Votes
-- `POST /api/votes` - Cast a vote
-- `GET /api/polls/:id/results` - Get poll results
+#### Voting
+- `POST /api/votes` - Cast vote (protected)
+- `GET /api/votes/results/:id` - Get poll results
+- `DELETE /api/votes/poll/:pollId` - Remove vote (protected)
+- `GET /api/votes/user` - Get voting history (protected)
 
-## WebSocket Events
+### Interactive Client
 
-### Client to Server
-- `join-poll` - Join a specific poll room
-- `leave-poll` - Leave a poll room
+Visit `http://localhost:3000/client` to use the interactive web client for testing all features including real-time updates.
 
-### Server to Client
-- `poll-updated` - Real-time poll results update
-- `new-vote` - New vote notification
+### Sample Credentials (after running `npm run db:setup`)
 
-## Development
+- **Email**: `alice@example.com` / **Password**: `password123`
+- **Email**: `bob@example.com` / **Password**: `password123`
+- **Email**: `charlie@example.com` / **Password**: `password123`
 
-### Database Management
+## 🧪 Testing
+
+### Automated API Testing
+
 ```bash
-# View database in browser
-npm run db:studio
+# Start server in one terminal
+npm run dev
 
-# Reset database
-npx prisma db reset
+# Run tests in another terminal
+npm test:api
 ```
 
-## Testing
+### Manual Testing with Client
 
-Test the API endpoints using tools like Postman or curl. WebSocket functionality can be tested using the browser's developer console.
+1. Start the server: `npm run dev`
+2. Open browser: `http://localhost:3000/client`
+3. Login with sample credentials
+4. Create polls, vote, and see real-time updates
 
-## Contributing
+## 🏗️ Database Schema
+
+The application uses a well-structured PostgreSQL schema with proper relationships:
+
+### Models
+
+- **User**: `id`, `name`, `email`, `passwordHash`
+- **Poll**: `id`, `question`, `isPublished`, `creatorId`
+- **PollOption**: `id`, `text`, `pollId`
+- **Vote**: `id`, `userId`, `pollOptionId`
+
+### Relationships
+
+- **User ↔ Poll**: One-to-Many (User can create many Polls)
+- **Poll ↔ PollOption**: One-to-Many (Poll has many Options)
+- **User ↔ Vote**: One-to-Many (User can cast many Votes)
+- **PollOption ↔ Vote**: One-to-Many (Option can receive many Votes)
+- **User ↔ PollOption**: Many-to-Many through Vote (User can vote on many Options)
+
+## ⚡ Real-Time Features
+
+### WebSocket Events
+
+**Client → Server:**
+- `join-poll` - Join poll room for updates
+- `leave-poll` - Leave poll room
+
+**Server → Client:**
+- `poll-updated` - Real-time poll results update
+
+### Live Updates
+
+- Vote counts update instantly for all connected clients
+- Percentage calculations update in real-time
+- Visual vote bars animate with new data
+
+## 🔒 Security Features
+
+- **JWT Authentication** with secure token handling
+- **Password hashing** using bcrypt with salt rounds
+- **Input validation** with express-validator
+- **CORS protection** with configurable origins
+- **SQL injection prevention** through Prisma ORM
+- **Authorization checks** for protected resources
+
+## 📊 API Documentation
+
+The API follows RESTful principles with:
+
+- **Consistent response formats**
+- **Proper HTTP status codes**
+- **Comprehensive error messages**
+- **Request/response validation**
+- **Authentication middleware**
+
+## 🔧 Development Scripts
+
+```bash
+npm run dev          # Start development server
+npm run start        # Start production server
+npm run db:generate  # Generate Prisma client
+npm run db:push      # Push schema to database
+npm run db:migrate   # Run database migrations
+npm run db:studio    # Open Prisma Studio
+npm run db:setup     # Seed database with sample data
+npm run test:api     # Run API tests
+npm run setup        # Complete setup (install, generate, push, seed)
+```
+
+## 🚀 Deployment
+
+### Prerequisites
+
+1. Node.js 16+ 
+2. PostgreSQL database
+3. Environment variables configured
+
+### Environment Variables for Production
+
+```env
+DATABASE_URL="postgresql://user:pass@host:port/dbname"
+JWT_SECRET="strong-random-secret-key"
+PORT=3000
+NODE_ENV=production
+CORS_ORIGIN="https://your-domain.com"
+```
+
+### Build and Deploy
+
+```bash
+# Install dependencies
+npm ci
+
+# Generate Prisma client
+npm run db:generate
+
+# Run database migrations
+npm run db:migrate
+
+# Start production server
+npm start
+```
+
+## 🔍 Monitoring and Logging
+
+- Database connection status logging
+- Request/response logging in development
+- Error handling with detailed messages
+- WebSocket connection tracking
+- Graceful shutdown handling
+
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
+## 📝 License
 
-MIT License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Express.js for the robust web framework
+- Prisma for excellent database tooling
+- Socket.IO for real-time communication
+- PostgreSQL for reliable data storage
+
+---
+
+**Made with ❤️ for Move37 Ventures Backend Developer Challenge**
