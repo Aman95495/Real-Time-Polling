@@ -2,7 +2,22 @@
 
 A comprehensive backend service for a real-time polling application built with Node.js, Express, PostgreSQL, Prisma, and WebSockets. This project demonstrates modern web development practices including RESTful API design, real-time communication, authentication, and database relationships.
 
-## 🌟 Features
+## � Demo Video
+
+**See the application in action!**
+
+https://github.com/Aman95495/Real-Time-Polling/assets/demo.mp4
+
+> **Watch the demo to see:**
+> - Live user registration and authentication
+> - Real-time poll creation and voting
+> - WebSocket updates across multiple clients
+> - Interactive web client with professional UI/UX
+> - API testing and validation in action
+
+*The demo showcases all key features including real-time vote counting, authentication flows, and the responsive web interface.*
+
+## �🌟 Features
 
 - **RESTful API** for complete CRUD operations
 - **Real-time updates** using Socket.IO WebSockets
@@ -58,6 +73,8 @@ real-time-polling/
 
 ## 🚀 Quick Start
 
+> **🎥 TL;DR: Watch the [demo video](demo.mp4) to see everything working before you start!**
+
 ### 1. Clone and Install Dependencies
 
 ```bash
@@ -109,6 +126,17 @@ npm start
 Server will be running at `http://localhost:3000`
 
 ## 📖 Usage
+
+### 🎬 Live Demo
+
+**Interactive Web Client**: Visit `http://localhost:3000/client` to use the beautiful web interface with real-time updates!
+
+**Demo Features**:
+- User registration and login
+- Poll creation with multiple options
+- Real-time voting with live results
+- WebSocket notifications across clients
+- Professional UI with animations
 
 ### API Endpoints
 
