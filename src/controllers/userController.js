@@ -10,9 +10,12 @@ const { validationResult } = require('express-validator');
  */
 async function register(req, res) {
   try {
+    console.log('🔄 Registration request received:', req.body);
+
     // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('❌ Validation errors:', errors.array());
       return res.status(400).json({
         error: 'Validation failed',
         details: errors.array()
@@ -24,9 +27,11 @@ async function register(req, res) {
     // Validate password strength
     const passwordValidation = validatePassword(password);
     if (!passwordValidation.isValid) {
+      console.log('❌ Password validation failed:', passwordValidation.errors);
       return res.status(400).json({
         error: 'Password validation failed',
-        details: passwordValidation.errors
+        message: 'Password does not meet security requirements',
+        details: passwordValidation.errors.map(err => ({ msg: err }))
       });
     }
 
