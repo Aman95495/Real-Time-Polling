@@ -104,7 +104,7 @@ async function castVote(req, res) {
       });
 
       // Get updated poll results
-      const updatedPoll = await getPollResults(pollOption.poll.id);
+      const updatedPoll = await getInternalPollResults(pollOption.poll.id);
 
       // Emit real-time update
       const io = req.app.get('io');
@@ -140,7 +140,7 @@ async function castVote(req, res) {
     });
 
     // Get updated poll results
-    const updatedPoll = await getPollResults(pollOption.poll.id);
+    const updatedPoll = await getInternalPollResults(pollOption.poll.id);
 
     // Emit real-time update
     const io = req.app.get('io');
@@ -216,7 +216,7 @@ async function removeVote(req, res) {
     });
 
     // Get updated poll results
-    const updatedPoll = await getPollResults(parseInt(pollId));
+    const updatedPoll = await getInternalPollResults(parseInt(pollId));
 
     // Emit real-time update
     const io = req.app.get('io');
@@ -375,6 +375,44 @@ async function getUserVotes(req, res) {
       message: 'Internal server error'
     });
   }
+}
+
+/**
+ * Internal function to get poll results without express req/res
+ * @param {number} pollId - Poll ID
+ * @returns {Promise<Object>} Poll results
+ */
+async function getInternalPollResults(pollId) {
+  const poll = await prisma.poll.findUnique({
+    where: { id: pollId },
+    include: {
+      options: {
+        include: {
+          _count: {
+            select: { votes: true }
+          }
+        }
+      }
+    }
+  });
+
+  if (!poll) {
+    throw new Error('Poll not found');
+  }
+
+  const totalVotes = poll.options.reduce((sum, option) => sum + option._count.votes, 0);
+  
+  return {
+    pollId: poll.id,
+    question: poll.question,
+    totalVotes,
+    options: poll.options.map(option => ({
+      id: option.id,
+      text: option.text,
+      voteCount: option._count.votes,
+      percentage: totalVotes > 0 ? Math.round((option._count.votes / totalVotes) * 100) : 0
+    }))
+  };
 }
 
 module.exports = {
