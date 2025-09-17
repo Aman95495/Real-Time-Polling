@@ -6,7 +6,7 @@ A comprehensive backend service for a real-time polling application built with N
 
 **See the application in action!**
 
-https://github.com/Aman95495/Real-Time-Polling/assets/demo.mp4
+https://github.com/Aman95495/Real-Time-Polling/demo.mp4
 
 > **Watch the demo to see:**
 > - Live user registration and authentication
