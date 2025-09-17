@@ -246,21 +246,18 @@ async function removeVote(req, res) {
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-async function getPollResults(pollId, req = null, res = null) {
+async function getPollResults(req, res) {
   try {
-    let actualPollId = pollId;
-    
-    if (req) {
-      // Check for validation errors when called as route handler
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({
-          error: 'Validation failed',
-          details: errors.array()
-        });
-      }
-      actualPollId = parseInt(req.params.id);
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: errors.array()
+      });
     }
+    
+    const actualPollId = parseInt(req.params.id);
 
     const poll = await prisma.poll.findUnique({
       where: { id: actualPollId },
@@ -276,13 +273,10 @@ async function getPollResults(pollId, req = null, res = null) {
     });
 
     if (!poll) {
-      if (res) {
-        return res.status(404).json({
-          error: 'Poll not found',
-          message: 'The requested poll does not exist'
-        });
-      }
-      throw new Error('Poll not found');
+      return res.status(404).json({
+        error: 'Poll not found',
+        message: 'The requested poll does not exist'
+      });
     }
 
     const totalVotes = poll.options.reduce((sum, option) => sum + option._count.votes, 0);
@@ -299,21 +293,14 @@ async function getPollResults(pollId, req = null, res = null) {
       }))
     };
 
-    if (res) {
-      return res.json(pollResults);
-    }
-
-    return pollResults;
+    return res.json(pollResults);
 
   } catch (error) {
     console.error('Get poll results error:', error);
-    if (res) {
-      return res.status(500).json({
-        error: 'Failed to get poll results',
-        message: 'Internal server error'
-      });
-    }
-    throw error;
+    return res.status(500).json({
+      error: 'Failed to get poll results',
+      message: 'Internal server error'
+    });
   }
 }
 
