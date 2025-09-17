@@ -248,6 +248,8 @@ async function removeVote(req, res) {
  */
 async function getPollResults(pollId, req = null, res = null) {
   try {
+    let actualPollId = pollId;
+    
     if (req) {
       // Check for validation errors when called as route handler
       const errors = validationResult(req);
@@ -257,11 +259,11 @@ async function getPollResults(pollId, req = null, res = null) {
           details: errors.array()
         });
       }
-      pollId = parseInt(req.params.id);
+      actualPollId = parseInt(req.params.id);
     }
 
     const poll = await prisma.poll.findUnique({
-      where: { id: pollId },
+      where: { id: actualPollId },
       include: {
         options: {
           include: {
@@ -286,7 +288,7 @@ async function getPollResults(pollId, req = null, res = null) {
     const totalVotes = poll.options.reduce((sum, option) => sum + option._count.votes, 0);
     
     const pollResults = {
-      pollId: poll.id,
+      pollId: actualPollId,
       question: poll.question,
       totalVotes,
       options: poll.options.map(option => ({
