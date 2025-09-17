@@ -61,7 +61,7 @@ real-time-polling/
 ### 1. Clone and Install Dependencies
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Aman95495/Real-Time-Polling.git
 cd real-time-polling
 npm install
 ```

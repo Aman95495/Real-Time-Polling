@@ -3,101 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-Time Polling - Client Example</title>
+    <title>Real-Time Polling - Interactive Client</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary-color: #06b6d4;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
         }
         
         .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: var(--bg-primary);
+            padding: 0;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            animation: slideInUp 0.6s ease-out;
         }
-        
-        h1 {
-            color: #333;
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            padding: 40px;
             text-align: center;
-            margin-bottom: 30px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.1) 0px,
+                rgba(255, 255, 255, 0.1) 1px,
+                transparent 1px,
+                transparent 20px
+            );
+            animation: movePattern 20s linear infinite;
+        }
+
+        @keyframes movePattern {
+            0% { transform: translate(-50%, -50%); }
+            100% { transform: translate(-48%, -48%); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
         }
         
         .section {
-            margin-bottom: 30px;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            margin: 0;
+            padding: 30px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section:hover {
+            background-color: var(--bg-secondary);
         }
         
         .section h2 {
-            color: #4a90e2;
-            margin-top: 0;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
         }
         
         input, textarea, button, select {
             width: 100%;
-            padding: 12px;
-            margin: 5px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 14px 18px;
+            margin: 8px 0;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
             font-size: 14px;
+            font-family: inherit;
             box-sizing: border-box;
+            transition: all 0.3s ease;
+            background-color: var(--bg-primary);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            transform: translateY(-1px);
+        }
+
+        input:hover, textarea:hover, select:hover {
+            border-color: var(--primary-hover);
         }
         
         button {
-            background-color: #4a90e2;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
             color: white;
             border: none;
             cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        button:hover::before {
+            left: 100%;
         }
         
         button:hover {
-            background-color: #357abd;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, var(--primary-hover) 0%, #3730a3 100%);
+        }
+
+        button:active {
+            transform: translateY(0);
         }
         
         button:disabled {
-            background-color: #ccc;
+            background: var(--border-color);
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        button:disabled:hover {
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #0891b2 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--error-color) 0%, #dc2626 100%);
         }
         
         .poll-option {
             display: flex;
             align-items: center;
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #eee;
-            border-radius: 5px;
+            margin: 12px 0;
+            padding: 16px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            background: var(--bg-primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .poll-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(79, 70, 229, 0.05), transparent);
+            transition: left 0.5s;
+        }
+
+        .poll-option:hover::before {
+            left: 100%;
         }
         
         .poll-option:hover {
-            background-color: #f0f8ff;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
         
         .poll-option.selected {
-            background-color: #e6f3ff;
-            border-color: #4a90e2;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+        }
+
+        .poll-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            margin-top: 0;
+            margin-bottom: 0;
+            accent-color: var(--primary-color);
+            transform: scale(1.2);
         }
         
         .vote-bar {
-            height: 20px;
-            background-color: #4a90e2;
-            border-radius: 10px;
-            transition: width 0.3s ease;
-            margin: 5px 0;
+            height: 8px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 6px;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 8px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vote-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
         
         .vote-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .vote-percentage {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
         }
         
         .status {
@@ -146,24 +388,143 @@
         }
         
         .connection-status {
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
             position: fixed;
             top: 20px;
             right: 20px;
             z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            animation: slideInRight 0.5s ease-out;
+            cursor: pointer;
+        }
+
+        .connection-status:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
         
         .connected {
-            background-color: #28a745;
+            background: linear-gradient(135deg, var(--success-color), #059669);
             color: white;
+            animation: pulse 2s infinite;
         }
         
         .disconnected {
-            background-color: #dc3545;
+            background: linear-gradient(135deg, var(--error-color), #dc2626);
             color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+            border: 2px solid var(--success-color);
+            color: var(--success-color);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-weight: 500;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+            border: 2px solid var(--error-color);
+            color: var(--error-color);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-weight: 500;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        .poll-card {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .poll-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .poll-card h3 {
+            margin-top: 0;
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-primary);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 1001;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .tooltip:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 115%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--text-primary);
+            z-index: 1001;
         }
     </style>
 </head>
@@ -173,16 +534,33 @@
     </div>
 
     <div class="container">
-        <h1>🗳️ Real-Time Polling Client</h1>
+        <div class="header">
+            <h1>🗳️ Real-Time Polling</h1>
+            <p class="subtitle">Interactive voting platform with live results</p>
+        </div>
         
         <!-- Authentication Section -->
         <div class="section">
             <h2>🔐 Authentication</h2>
             <div id="loginSection">
-                <input type="email" id="email" placeholder="Email" value="alice@example.com">
-                <input type="password" id="password" placeholder="Password" value="password123">
-                <button onclick="login()">Login</button>
-                <button onclick="register()">Register</button>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email" value="alice@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" value="password123">
+                </div>
+                <div class="form-group" style="display: flex; gap: 12px;">
+                    <button onclick="login()" style="flex: 1;">
+                        <span id="loginSpinner" class="loading-spinner" style="display: none;"></span>
+                        Login
+                    </button>
+                    <button onclick="register()" class="btn-secondary" style="flex: 1;">
+                        <span id="registerSpinner" class="loading-spinner" style="display: none;"></span>
+                        Register
+                    </button>
+                </div>
             </div>
             
             <div id="userSection" class="hidden">
@@ -196,27 +574,43 @@
         <!-- Polls Section -->
         <div class="section">
             <h2>📊 Available Polls</h2>
-            <button onclick="loadPolls()">Refresh Polls</button>
+            <button onclick="loadPolls()" class="tooltip" data-tooltip="Fetch latest polls from server">
+                <span id="refreshSpinner" class="loading-spinner" style="display: none;"></span>
+                Refresh Polls
+            </button>
             <div id="pollsList" class="polls-grid"></div>
         </div>
 
         <!-- Create Poll Section -->
         <div class="section" id="createPollSection" class="hidden">
             <h2>➕ Create New Poll</h2>
-            <input type="text" id="pollQuestion" placeholder="Enter your question...">
-            <div id="pollOptions">
-                <input type="text" class="poll-option-input" placeholder="Option 1">
-                <input type="text" class="poll-option-input" placeholder="Option 2">
+            <div class="form-group">
+                <label for="pollQuestion">Poll Question</label>
+                <textarea id="pollQuestion" placeholder="What would you like to ask?" rows="2"></textarea>
             </div>
-            <button onclick="addOption()">Add Option</button>
-            <button onclick="createPoll()">Create Poll</button>
+            <div class="form-group">
+                <label>Poll Options</label>
+                <div id="pollOptions">
+                    <input type="text" class="poll-option-input" placeholder="Option 1" style="margin-bottom: 10px;">
+                    <input type="text" class="poll-option-input" placeholder="Option 2" style="margin-bottom: 10px;">
+                </div>
+                <button onclick="addOption()" class="btn-secondary" style="width: auto; padding: 8px 16px; font-size: 12px; margin-top: 8px;">
+                    + Add Option
+                </button>
+            </div>
+            <button onclick="createPoll()" class="btn-success">
+                <span id="createPollSpinner" class="loading-spinner" style="display: none;"></span>
+                Create Poll
+            </button>
         </div>
 
         <!-- WebSocket Logs -->
         <div class="section">
             <h2>🔄 Real-Time Updates</h2>
-            <div id="websocketLogs" style="background: #f8f9fa; padding: 15px; border-radius: 5px; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px;"></div>
-            <button onclick="clearLogs()">Clear Logs</button>
+            <div id="websocketLogs" style="background: var(--bg-secondary); padding: 20px; border-radius: 12px; max-height: 250px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 13px; border: 2px solid var(--border-color); line-height: 1.4;"></div>
+            <button onclick="clearLogs()" class="btn-danger" style="width: auto; padding: 8px 16px; margin-top: 12px;">
+                Clear Logs
+            </button>
         </div>
     </div>
 
@@ -283,6 +677,20 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
+            if (!email || !password) {
+                showAuthStatus('Please fill in all fields', 'error');
+                return;
+            }
+
+            const spinner = document.getElementById('loginSpinner');
+            const button = event.target;
+            const originalText = button.innerHTML;
+            
+            // Show loading state
+            spinner.style.display = 'inline-block';
+            button.disabled = true;
+            button.style.opacity = '0.7';
+            
             try {
                 const response = await fetch('/api/users/login', {
                     method: 'POST',
@@ -300,14 +708,25 @@
                     localStorage.setItem('authToken', authToken);
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     
-                    showAuthStatus('Login successful!', 'success');
+                    showAuthStatus('🎉 Welcome back, ' + currentUser.name + '!', 'success');
                     showUserSection();
                     loadPolls();
+                    
+                    // Add success animation
+                    button.style.background = 'linear-gradient(135deg, var(--success-color) 0%, #059669 100%)';
+                    setTimeout(() => {
+                        button.style.background = '';
+                    }, 2000);
                 } else {
-                    showAuthStatus(data.message || 'Login failed', 'error');
+                    showAuthStatus('❌ ' + (data.message || 'Login failed'), 'error');
                 }
             } catch (error) {
-                showAuthStatus('Login failed: ' + error.message, 'error');
+                showAuthStatus('❌ Login failed: ' + error.message, 'error');
+            } finally {
+                // Hide loading state
+                spinner.style.display = 'none';
+                button.disabled = false;
+                button.style.opacity = '1';
             }
         }
 
@@ -315,8 +734,21 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
+            if (!email || !password) {
+                showAuthStatus('Please fill in all fields', 'error');
+                return;
+            }
+            
             // Simple name generation for demo
             const name = email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1);
+
+            const spinner = document.getElementById('registerSpinner');
+            const button = event.target;
+            
+            // Show loading state
+            spinner.style.display = 'inline-block';
+            button.disabled = true;
+            button.style.opacity = '0.7';
             
             try {
                 const response = await fetch('/api/users/register', {
@@ -374,16 +806,34 @@
         function showAuthStatus(message, type) {
             const statusEl = document.getElementById('authStatus');
             statusEl.textContent = message;
-            statusEl.className = `status ${type}`;
+            statusEl.className = `${type === 'success' ? 'success-message' : type === 'error' ? 'error-message' : 'info-message'}`;
             statusEl.classList.remove('hidden');
             
+            // Auto-hide with animation
             setTimeout(() => {
-                statusEl.classList.add('hidden');
-            }, 5000);
+                statusEl.style.opacity = '0';
+                statusEl.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    statusEl.classList.add('hidden');
+                    statusEl.style.opacity = '1';
+                    statusEl.style.transform = 'translateY(0)';
+                }, 300);
+            }, 4000);
         }
 
         // Poll functions
         async function loadPolls() {
+            const spinner = document.getElementById('refreshSpinner');
+            const button = event?.target;
+            
+            if (spinner) {
+                spinner.style.display = 'inline-block';
+            }
+            if (button) {
+                button.disabled = true;
+                button.style.opacity = '0.7';
+            }
+            
             try {
                 const headers = { 'Content-Type': 'application/json' };
                 if (authToken) {
@@ -395,11 +845,20 @@
                 
                 if (response.ok) {
                     displayPolls(data.polls);
+                    log('✅ Loaded ' + data.polls.length + ' polls');
                 } else {
                     log('❌ Failed to load polls: ' + data.message);
                 }
             } catch (error) {
                 log('❌ Error loading polls: ' + error.message);
+            } finally {
+                if (spinner) {
+                    spinner.style.display = 'none';
+                }
+                if (button) {
+                    button.disabled = false;
+                    button.style.opacity = '1';
+                }
             }
         }
 
@@ -407,14 +866,30 @@
             const pollsContainer = document.getElementById('pollsList');
             pollsContainer.innerHTML = '';
             
-            polls.forEach(poll => {
+            if (polls.length === 0) {
+                pollsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                        <div style="font-size: 48px; margin-bottom: 16px;">🗳️</div>
+                        <h3>No polls available yet</h3>
+                        <p>Create the first poll to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            polls.forEach((poll, index) => {
                 const pollCard = document.createElement('div');
                 pollCard.className = 'poll-card';
+                pollCard.style.animationDelay = `${index * 0.1}s`;
                 pollCard.innerHTML = `
                     <h3>${poll.question}</h3>
-                    <p>Created by: ${poll.creator.name}</p>
-                    <p>Total votes: ${poll.totalVotes}</p>
-                    <button onclick="viewPoll(${poll.id})">View Poll</button>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0; color: var(--text-secondary); font-size: 14px;">
+                        <span>👤 ${poll.creator.name}</span>
+                        <span>🗳️ ${poll.totalVotes} votes</span>
+                    </div>
+                    <button onclick="viewPoll(${poll.id})" style="margin-top: 12px;">
+                        View Details & Vote
+                    </button>
                 `;
                 pollsContainer.appendChild(pollCard);
             });
@@ -601,12 +1076,60 @@
         function log(message) {
             const logsContainer = document.getElementById('websocketLogs');
             const timestamp = new Date().toLocaleTimeString();
-            logsContainer.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            const logEntry = document.createElement('div');
+            
+            logEntry.style.marginBottom = '8px';
+            logEntry.style.padding = '8px 12px';
+            logEntry.style.borderRadius = '6px';
+            logEntry.style.fontSize = '12px';
+            logEntry.style.lineHeight = '1.4';
+            logEntry.style.animation = 'slideInRight 0.3s ease-out';
+            
+            // Color code based on message type
+            if (message.includes('✅') || message.includes('🟢')) {
+                logEntry.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+                logEntry.style.borderLeft = '3px solid var(--success-color)';
+                logEntry.style.color = 'var(--success-color)';
+            } else if (message.includes('❌') || message.includes('🔴')) {
+                logEntry.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                logEntry.style.borderLeft = '3px solid var(--error-color)';
+                logEntry.style.color = 'var(--error-color)';
+            } else if (message.includes('📊') || message.includes('🗳️')) {
+                logEntry.style.backgroundColor = 'rgba(79, 70, 229, 0.1)';
+                logEntry.style.borderLeft = '3px solid var(--primary-color)';
+                logEntry.style.color = 'var(--primary-color)';
+            } else {
+                logEntry.style.backgroundColor = 'rgba(107, 114, 128, 0.1)';
+                logEntry.style.borderLeft = '3px solid var(--text-secondary)';
+                logEntry.style.color = 'var(--text-secondary)';
+            }
+            
+            logEntry.innerHTML = `
+                <span style="opacity: 0.7; font-size: 11px;">[${timestamp}]</span>
+                <span style="margin-left: 8px;">${message}</span>
+            `;
+            
+            logsContainer.appendChild(logEntry);
             logsContainer.scrollTop = logsContainer.scrollHeight;
+            
+            // Auto-remove old logs (keep last 20)
+            const logs = logsContainer.children;
+            if (logs.length > 20) {
+                logsContainer.removeChild(logs[0]);
+            }
         }
 
         function clearLogs() {
-            document.getElementById('websocketLogs').innerHTML = '';
+            const logsContainer = document.getElementById('websocketLogs');
+            logsContainer.style.opacity = '0.5';
+            setTimeout(() => {
+                logsContainer.innerHTML = `
+                    <div style="text-align: center; color: var(--text-secondary); font-style: italic; padding: 20px;">
+                        📝 Logs cleared - Real-time updates will appear here
+                    </div>
+                `;
+                logsContainer.style.opacity = '1';
+            }, 200);
         }
 
         // Initialize the app when page loads
